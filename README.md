@@ -10,7 +10,13 @@ Edge services for SortWise, including image upload to s3, and inference and meta
 python -m venv env
 ```
 
-2. Install the required packages
+2. Activate the virtual environment
+
+```
+source env/bin/activate
+```
+
+3. Install the required packages
 
 ```
 pip install -r requirements.txt
