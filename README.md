@@ -2,6 +2,14 @@
 
 Edge services for SortWise, including image upload to s3, and inference and metadata from Amazon SageMaker and DynamoDB.
 
+## Requirements
+
+- Python 3.11 and above. Exectute the following command to check the version of python installed on your system.
+
+```
+python --version
+```
+
 ## Setup
 
 1. Install Python Virtual Environment
@@ -20,4 +28,26 @@ source env/bin/activate
 
 ```
 pip install -r requirements.txt
+```
+
+### Notes
+
+1. If there are new packages installed, update the requirements.txt file by running the following command:
+
+```
+pip freeze > requirements.txt
+```
+
+## Running the development server
+
+1. Run the following command to start the development server. By default, the development process runs on port 8000.
+
+```
+uvicorn main:app --reload
+```
+
+2. Open the browser and navigate to the following URL to access the API documentation
+
+```
+http://localhost:8000/docs
 ```
