@@ -1,8 +1,6 @@
-from typing import Union
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from mangum import Mangum
 from image_upload.router import router as image_router
 
 origins = [
@@ -21,6 +19,9 @@ app.add_middleware(
 )
 
 app.include_router(image_router)
+
+# Wrap API with handler for deployment
+handler = Mangum(app)
 
 
 @app.get("/")

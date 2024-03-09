@@ -51,3 +51,7 @@ uvicorn main:app --reload
 ```
 http://localhost:8000/docs
 ```
+
+## Deployment
+
+SortWise API is deployed onto AWS Lambda using Docker images and Amazon ECR. The deployment process is automated using GitHub Actions. The deployment process is triggered when a new release is created on the repository.
