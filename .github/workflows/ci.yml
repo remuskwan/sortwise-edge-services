@@ -25,10 +25,10 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v2
       
     - name: Build Docker image
-      run: docker build -t lambda-deploy .
+      run: docker build -t sortwise-edge-services .
       
     - name: Tag Docker image
-      run: docker tag lambda-deploy:latest ${{ steps.login-ecr.outputs.registry }}/lambda-deploy:latest
+      run: docker tag sortwise-edge-services:latest ${{ steps.login-ecr.outputs.registry }}/sortwise-edge-services:latest
     
     - name: Push Docker Image to ECR
-      run: docker push ${{ steps.login-ecr.outputs.registry }}/lambda-deploy:latest
+      run: docker push ${{ steps.login-ecr.outputs.registry }}/sortwise-edge-services:latest
