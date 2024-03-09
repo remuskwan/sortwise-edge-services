@@ -3,16 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from image_upload.router import router as image_router
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-]
-
-
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
