@@ -19,5 +19,5 @@ handler = Mangum(app)
 
 
 @app.get("/")
-def home():
-    return {"message": "Hello World!"}
+def healthcheck():
+    return {"message": "Yay I'm healthy!"}
