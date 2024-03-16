@@ -1,9 +1,10 @@
-from fastapi import APIRouter, UploadFile, HTTPException, status
-from uuid import uuid4
+from typing import Optional
+from fastapi import APIRouter, HTTPException, status, Query
+from botocore.exceptions import BotoCoreError, ClientError
 
-from image_upload.constants import SUPPORTED_FILE_SIZE, SUPPORTED_FILE_TYPES
-from aws.client import s3_upload
-from loguru import logger
+import aws.client as aws
+
+import requests
 
 router = APIRouter(
     prefix="/image",
@@ -12,24 +13,54 @@ router = APIRouter(
 )
 
 
-@router.post("/upload/")
-async def upload(image: UploadFile | None = None):
-    if not image:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="No file provided")
+@router.get("/generate-presigned-url/")
+async def generate_presigned_url(action: str, file_name: str, content_type: str = Query(None), user_id: Optional[str] = None):
+    """Generate a pre-signed URL for S3 actions."""
 
-    # read image
-    contents = await image.read()
-    size = len(contents)
+    if action not in ['put', 'get']:
+        raise HTTPException(status_code=400, detail="Invalid action")
 
-    if not size in range(SUPPORTED_FILE_SIZE):
+    try:
+        object_name = f"{user_id}/{file_name}" if user_id else f"general/{file_name}"
+
+        if action == 'get':
+            response = aws.s3_generate_presigned_url('get_object',
+                                                     method_parameters={
+                                                         'Key': object_name},
+                                                     expires_in=3600)
+        else:
+            response = aws.s3_generate_presigned_url('put_object',
+                                                     method_parameters={
+                                                         'Key': object_name, 'ContentType': content_type},
+                                                     expires_in=3600)
+    except (ClientError, BotoCoreError) as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Maximum file size is 2MB")
-    file_type = image.content_type
-    if not file_type in SUPPORTED_FILE_TYPES:
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    return {"url": response, "objectName": object_name}
+
+
+@router.get("/list-user-images-metadata/")
+async def list_user_images_metadata(user_id: str):
+    """List all images metadata for a user."""
+    try:
+        response = aws.s3_list_objects(f"{user_id}/")
+
+        if 'Contents' not in response:
+            return {"message": "No images found for the user."}
+
+        objects_metadata = []
+        for obj in response['Contents']:
+            metadata = aws.s3_fetch_object_metadata(obj)
+            objects_metadata.append({
+                "Key": obj['Key'],
+                "LastModified": obj['LastModified'],
+                "Size": obj['Size'],
+                "ContentType": metadata['ContentType'],
+                # Add any other metadata you need
+            })
+    except (ClientError, BotoCoreError) as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Unsupported file type: {file_type}. Supported types are {SUPPORTED_FILE_TYPES}")
-    file_name = f'{uuid4()}.{SUPPORTED_FILE_TYPES[file_type]}'
-    # upload to s3
-    await s3_upload(contents=contents, key=file_name)
-    return {'file_name': file_name}
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    return objects_metadata
