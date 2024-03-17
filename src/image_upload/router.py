@@ -4,8 +4,6 @@ from botocore.exceptions import BotoCoreError, ClientError
 
 import aws.client as aws
 
-import requests
-
 router = APIRouter(
     prefix="/image",
     tags=["image"],
