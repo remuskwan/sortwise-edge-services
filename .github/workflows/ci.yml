@@ -24,7 +24,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
-        run: docker buildx build --platform linux/arm64 -t sortwise-edge-services .
+        run: docker build --platform -t sortwise-edge-services .
 
       - name: Tag Docker image
         run: docker tag sortwise-edge-services:latest ${{ steps.login-ecr.outputs.registry }}/sortwise-edge-services:latest
