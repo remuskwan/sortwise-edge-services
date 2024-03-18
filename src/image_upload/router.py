@@ -12,6 +12,7 @@ router = APIRouter(
 
 
 @router.get("/generate-presigned-url/")
+@router.get("/generate-presigned-url")
 async def generate_presigned_url(action: str, file_name: str, content_type: str = Query(None), user_id: Optional[str] = None):
     """Generate a pre-signed URL for S3 actions."""
 
@@ -39,6 +40,7 @@ async def generate_presigned_url(action: str, file_name: str, content_type: str 
 
 
 @router.get("/list-user-images-metadata/")
+@router.get("/list-user-images-metadata")
 async def list_user_images_metadata(user_id: str):
     """List all images metadata for a user."""
     try:
