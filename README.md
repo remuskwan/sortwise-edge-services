@@ -4,7 +4,7 @@ Edge services for SortWise, including image upload to s3, and inference and meta
 
 ## Requirements
 
-- Python 3.11 and above. Exectute the following command to check the version of python installed on your system.
+Python 3.11 and above. Exectute the following command to check the version of python installed on your system.
 
 ```
 python --version
