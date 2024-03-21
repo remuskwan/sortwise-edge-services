@@ -3,6 +3,8 @@ from fastapi import APIRouter, HTTPException, status, Query
 from botocore.exceptions import BotoCoreError, ClientError
 
 import aws.client as aws
+from image.service import get_image_metadata_by_object_key
+from utils.exceptions import ItemNotFoundError
 
 router = APIRouter(
     prefix="/image",
@@ -62,3 +64,17 @@ async def list_user_images_metadata(user_id: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     return objects_metadata
+
+
+@router.get("/metadata")
+async def get_image_metadata(object_key: str):
+    """Get a specific image metadata."""
+    try:
+        response = get_image_metadata_by_object_key(object_key)
+    except ItemNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except (ClientError, BotoCoreError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    return response
