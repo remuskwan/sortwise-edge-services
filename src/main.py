@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
-from image_upload.router import router as image_router
+from image.router import router as image_router
 
 app = FastAPI()
 app.add_middleware(
