@@ -1,6 +1,6 @@
 from loguru import logger
 
-from src.aws.client import dynamo_get_item
+import src.aws.client as aws
 from src.utils.exceptions import ItemNotFoundError
 
 
@@ -8,11 +8,25 @@ def get_all_image_metadata():
     pass
 
 
-def get_all_image_metadata_for_user(user_id: str):
+def get_image_metadata_by_user_id(user_id: str):
     """Get all images metadata for a user."""
     table = "ImageMetadata"
-    key = {"UserId": user_id}
-    pass
+
+    try:
+        response = aws.dynamo_scan(
+            table_name=table,
+            FilterExpression='UserId = :user_id',
+            ExpressionAttributeValues={
+                ':user_id': user_id
+            }
+        )
+        if "Items" not in response:
+            raise ItemNotFoundError(
+                f"Image with user id {user_id} not found")
+    except Exception as err:
+        logger.error("Error getting image metadata: {err}", err=err)
+        raise
+    return response["Items"]
 
 
 def get_image_metadata_by_object_key(object_key: str):
@@ -21,7 +35,7 @@ def get_image_metadata_by_object_key(object_key: str):
     key = {"ObjectKey": object_key}
 
     try:
-        response = dynamo_get_item(table, key)
+        response = aws.dynamo_get_item(table, key)
         if "Item" not in response:
             raise ItemNotFoundError(
                 f"Image with object_key {object_key} not found")

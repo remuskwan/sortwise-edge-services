@@ -1,5 +1,6 @@
 import os
 import boto3
+from typing import Optional
 from botocore.exceptions import ClientError, BotoCoreError
 from loguru import logger
 from dotenv import load_dotenv
@@ -95,5 +96,16 @@ def dynamo_get_item(table_name: str, key: dict):
     except (ClientError, BotoCoreError):
         logger.exception(
             "Couldn't get item from table '{table_name}'.", table_name=table_name)
+        raise
+    return response
+
+
+def dynamo_scan(table_name: str, **kwargs):
+    try:
+        table = dynamo_resource.Table(table_name)
+        response = table.scan(**kwargs)
+    except (ClientError, BotoCoreError):
+        logger.exception(
+            "Couldn't scan table '{table_name}'.", table_name=table_name)
         raise
     return response
