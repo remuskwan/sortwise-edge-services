@@ -12,11 +12,17 @@ AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
 AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
 
+session = boto3.Session(
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY,
+    region_name=AWS_DEFAULT_REGION
+)
+
 # For Low-Level API calls
-s3_client = boto3.client("s3", region_name=AWS_DEFAULT_REGION)
+s3_client = session.client("s3")
 # For High-Level API calls
-s3_resource = boto3.resource('s3', region_name=AWS_DEFAULT_REGION)
-dynamo_resource = boto3.resource('dynamodb', region_name=AWS_DEFAULT_REGION)
+s3_resource = session.resource('s3')
+dynamo_resource = session.resource('dynamodb')
 
 
 def s3_generate_presigned_url(client_method, method_parameters, expires_in=3600):
