@@ -40,39 +40,13 @@ async def generate_presigned_url(action: str, file_name: str, content_type: str 
     return {"url": response, "objectName": object_name}
 
 
-@router.get("/list-user-images-metadata")
-async def list_user_images_metadata(user_id: str):
-    """List all images metadata for a user."""
-    try:
-        response = aws.s3_list_objects(f"{user_id}/")
-
-        if 'Contents' not in response:
-            return {"message": "No images found for the user."}
-
-        objects_metadata = []
-        for obj in response['Contents']:
-            metadata = aws.s3_fetch_object_metadata(obj)
-            objects_metadata.append({
-                "Key": obj['Key'],
-                "LastModified": obj['LastModified'],
-                "Size": obj['Size'],
-                "ContentType": metadata['ContentType'],
-                # Add any other metadata you need
-            })
-    except (ClientError, BotoCoreError) as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return objects_metadata
-
-
 @router.get("/metadata/user/{user_id}")
 async def get_all_image_metadata(user_id: str):
     """Get all images metadata for a user."""
     try:
         response = image_service.get_image_metadata_by_user_id(user_id=user_id)
-    except ItemNotFoundError as e:
-        return {}
+    except ItemNotFoundError:
+        return []
     except (ClientError, BotoCoreError) as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
@@ -80,30 +54,18 @@ async def get_all_image_metadata(user_id: str):
     return response
 
 
-# @router.get("/metadata")
-# async def get_all_image_metadata():
-#     """Get all images metadata."""
-#     try:
-#         response = aws.s3_list_objects("general/")
+@router.get("/metadata/inference")
+async def get_image_metadata_with_inference():
+    """Get all images metadata with non-null inference results."""
+    try:
+        response = image_service.get_image_metadata_with_inference()
+    except ItemNotFoundError:
+        return []
+    except (ClientError, BotoCoreError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-#         if 'Contents' not in response:
-#             return {"message": "No images found."}
-
-#         objects_metadata = []
-#         for obj in response['Contents']:
-#             metadata = aws.s3_fetch_object_metadata(obj)
-#             objects_metadata.append({
-#                 "Key": obj['Key'],
-#                 "LastModified": obj['LastModified'],
-#                 "Size": obj['Size'],
-#                 "ContentType": metadata['ContentType'],
-#                 # Add any other metadata you need
-#             })
-#     except (ClientError, BotoCoreError) as e:
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-#     return objects_metadata
+    return response
 
 
 @router.get("/metadata/{object_key:path}")

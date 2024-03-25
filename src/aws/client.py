@@ -1,6 +1,5 @@
 import os
 import boto3
-from typing import Optional
 from botocore.exceptions import ClientError, BotoCoreError
 from loguru import logger
 from dotenv import load_dotenv
@@ -49,26 +48,6 @@ def s3_generate_presigned_url(client_method, method_parameters, expires_in=3600)
         )
         raise
     return url
-
-
-def s3_list_objects(prefix: str):
-    """
-    List objects in an Amazon S3 bucket with a specific prefix.
-
-    :param prefix: The prefix of the objects to list.
-    :return: The list of objects.
-    """
-    try:
-        if not prefix.endswith("/"):
-            prefix += "/"
-        objects = s3_client.list_objects_v2(
-            Bucket=AWS_S3_BUCKET, Prefix=prefix)
-        logger.info("Got objects: {objects}", objects=objects)
-    except (ClientError, BotoCoreError):
-        logger.exception(
-            "Couldn't list objects with prefix '{prefix}'.", prefix=prefix)
-        raise
-    return objects
 
 
 def s3_fetch_object_metadata(object):
