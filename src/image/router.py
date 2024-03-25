@@ -67,6 +67,58 @@ async def list_user_images_metadata(user_id: str):
 
 
 @router.get("/metadata")
+async def get_all_image_metadata(user_id: str):
+    """Get all images metadata for a user."""
+    try:
+        response = aws.s3_list_objects("general/")
+
+        if 'Contents' not in response:
+            return {"message": "No images found."}
+
+        objects_metadata = []
+        for obj in response['Contents']:
+            metadata = aws.s3_fetch_object_metadata(obj)
+            objects_metadata.append({
+                "Key": obj['Key'],
+                "LastModified": obj['LastModified'],
+                "Size": obj['Size'],
+                "ContentType": metadata['ContentType'],
+                # Add any other metadata you need
+            })
+    except (ClientError, BotoCoreError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    return objects_metadata
+
+
+@router.get("/metadata")
+async def get_all_image_metadata():
+    """Get all images metadata."""
+    try:
+        response = aws.s3_list_objects("general/")
+
+        if 'Contents' not in response:
+            return {"message": "No images found."}
+
+        objects_metadata = []
+        for obj in response['Contents']:
+            metadata = aws.s3_fetch_object_metadata(obj)
+            objects_metadata.append({
+                "Key": obj['Key'],
+                "LastModified": obj['LastModified'],
+                "Size": obj['Size'],
+                "ContentType": metadata['ContentType'],
+                # Add any other metadata you need
+            })
+    except (ClientError, BotoCoreError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    return objects_metadata
+
+
+@router.get("/metadata")
 async def get_image_metadata(object_key: str):
     """Get a specific image metadata."""
     try:

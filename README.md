@@ -41,17 +41,19 @@ pip freeze > requirements.txt
 ## Running the development server
 
 1. Create a new `.env` file using the `.env.example` provided in the repository. Fill in the required environment variables.
+
 ```bash
 # In the root directory of the repository
 touch .env
 ```
-3. Run the following command to start the development server. By default, the development process runs on port 8000.
+
+2. Run the following command to start the development server. By default, the development process runs on port 8000.
 
 ```
-uvicorn main:app --reload
+uvicorn src.main:app --reload
 ```
 
-2. Open the browser and navigate to the following URL to access the API documentation
+3. Open the browser and navigate to the following URL to access the API documentation
 
 ```
 http://localhost:8000/docs
