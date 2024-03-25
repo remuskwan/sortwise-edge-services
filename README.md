@@ -58,6 +58,7 @@ uvicorn src.main:app --reload
 ```
 http://localhost:8000/docs
 ```
+![Screenshot 2024-03-26 at 12 19 28 AM](https://github.com/remuskwan/sortwise-edge-services/assets/36059985/9ee3b4ee-0871-4afd-a222-642cb6b77bda)
 
 ## Deployment
 
