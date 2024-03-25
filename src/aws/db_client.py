@@ -10,9 +10,10 @@ load_dotenv()
 AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
+AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
 
 # For High-Level API calls
-db_resource = boto3.resource('dynamodb')
+db_resource = boto3.resource('dynamodb', region_name=AWS_DEFAULT_REGION)
 
 
 def dynamo_get_item(table_name: str, key: dict):
