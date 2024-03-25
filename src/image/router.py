@@ -2,9 +2,9 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, status, Query
 from botocore.exceptions import BotoCoreError, ClientError
 
-import aws.client as aws
-from image.service import get_image_metadata_by_object_key
-from utils.exceptions import ItemNotFoundError
+import src.aws.client as aws
+from src.image.service import get_image_metadata_by_object_key
+from src.utils.exceptions import ItemNotFoundError
 
 router = APIRouter(
     prefix="/image",

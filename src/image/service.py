@@ -1,7 +1,7 @@
 from loguru import logger
 
-from aws.client import dynamo_get_item
-from utils.exceptions import ItemNotFoundError
+from src.aws.client import dynamo_get_item
+from src.utils.exceptions import ItemNotFoundError
 
 
 def get_image_metadata_by_object_key(object_key: str):
