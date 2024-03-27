@@ -52,15 +52,20 @@ def get_image_metadata_by_user_id(user_id: str):
 def get_image_metadata_by_object_key(object_key: str):
     """Get a specific inference result."""
     table = "ImageMetadata"
-    key = {"ObjectKey": object_key}
 
     try:
-        response = aws.dynamo_get_item(table, key)
-        if "Item" not in response:
+        response = aws.dynamo_query_item(
+            table_name=table,
+            KeyConditionExpression='ObjectKey = :object_key',
+            ExpressionAttributeValues={
+                ':object_key': object_key,
+            }
+        )
+        if "Items" not in response:
             raise ItemNotFoundError(
                 f"Image with object_key {object_key} not found")
     except Exception as err:
         logger.error("Error getting image metadata: {err}", err=err)
         raise
 
-    return response["Item"]
+    return response["Items"]
