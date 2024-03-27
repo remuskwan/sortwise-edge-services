@@ -61,7 +61,7 @@ def s3_fetch_object_metadata(object):
     return response
 
 
-def dynamo_get_item(table_name: str, key: dict):
+def dynamo_query_item(table_name: str, **kwargs):
     """
     Get an item from a DynamoDB table.
     :param table_name: The name of the table.
@@ -70,7 +70,7 @@ def dynamo_get_item(table_name: str, key: dict):
     """
     try:
         table = dynamo_resource.Table(table_name)
-        response = table.get_item(Key=key)
+        response = table.query(**kwargs)
         logger.info("Got item: {item}", item=response)
     except (ClientError, BotoCoreError):
         logger.exception(
